@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, HttpException, Param, ParseIntPipe } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { OrderProduct } from 'src/models/order-product.model';
 import { OrderDTO } from 'src/models/order.model';
 import { OrdersService } from './orders.service';
@@ -9,17 +10,35 @@ export class OrdersController {
 
   @Get()
   getOrders(): Promise<OrderDTO[]> {
-    return this.ordersService.getOrders();
+    return this.ordersService.getOrders()
+    .then(res=>{
+      return res
+    })
+    .catch((err:AxiosError)=>{
+      throw new HttpException(err.message, err.response.status)
+    });
   }
 
   @Get(':OrderID')
-  getOrder(@Param('OrderID') orderID): Promise<OrderDTO> {
-    return this.ordersService.getOrder(orderID);
+  getOrder(@Param('OrderID', ParseIntPipe) orderID:number): Promise<OrderDTO>{
+    return this.ordersService.getOrder(orderID)
+    .then(res=>{
+      return res
+    })
+    .catch((err:AxiosError)=>{
+      throw new HttpException(err.message, err.response.status)
+    });
   }
 
   @Get(':OrderID/products')
-  getOrderProducts(@Param('OrderID') orderID): Promise<OrderProduct[]> {
-    return this.ordersService.getOrderProducts(orderID);
+  getOrderProducts(@Param('OrderID', ParseIntPipe) orderID:number): Promise<OrderProduct[]> {
+    return this.ordersService.getOrderProducts(orderID)
+    .then(res=>{
+      return res
+    })
+    .catch((err:AxiosError)=>{
+      throw new HttpException(err.message, err.response.status)
+    });
   }
 
 }
